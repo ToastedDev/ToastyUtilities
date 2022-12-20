@@ -33,7 +33,7 @@ export class BotClient extends Client {
   }
 
   connect() {
-    this.login(this.token);
+    this.login();
     mongoose.set("strictQuery", false);
     mongoose
       .connect(process.env.MONGODB_URL)
