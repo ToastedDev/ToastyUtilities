@@ -13,7 +13,7 @@
   "author": "Toastify (https://toastify.tk/)",
   "license": "ISC",
   "dependencies": {
-    "@toastify/structures": "^1.2.1",
+    "@toastify/structures": "^1.2.2",
     "@types/ms": "^0.7.31",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",

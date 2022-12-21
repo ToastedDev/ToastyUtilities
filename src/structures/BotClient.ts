@@ -1,4 +1,5 @@
 import {
+  ApplicationCommandDataResolvable,
   Client,
   ClientOptions,
   Collection,
@@ -6,11 +7,13 @@ import {
 } from "discord.js";
 import mongoose from "mongoose";
 import fs from "fs";
+import path from 'path'
 import { MessageCommand, SlashCommand } from "./Command";
+import { guildId } from "../config";
 
 export class BotClient extends Client {
   commands = new Collection<string, MessageCommand>();
-  // slashCommands = new Collection<string, SlashCommand>();
+  slashCommands = new Collection<string, SlashCommand>();
 
   constructor(
     token: string | undefined,
@@ -45,9 +48,9 @@ export class BotClient extends Client {
 
   register() {
     // Message commands
-    fs.readdirSync("./src/commands").forEach(async (dir) => {
+    fs.readdirSync(path.join(__dirname, "../commands")).forEach(async (dir) => {
       const commandFiles = fs
-        .readdirSync(`./src/commands/${dir}`)
+        .readdirSync(path.join(__dirname, `../commands/${dir}`))
         .filter((file) => file.endsWith("ts") || file.endsWith("js"));
 
       for (const file of commandFiles) {
@@ -57,6 +60,38 @@ export class BotClient extends Client {
         if (!command?.name || !command?.run) return;
 
         this.commands.set(command.name, { directory: dir, ...command });
+      }
+    });
+
+    // Slash commands
+    const commands: ApplicationCommandDataResolvable[] = [];
+
+    fs.readdirSync(path.join(__dirname, "../slashCommands")).forEach(async (dir) => {
+      const commandFiles = fs
+        .readdirSync(path.join(__dirname, `../slashCommands/${dir}`))
+        .filter((file) => file.endsWith("ts") || file.endsWith("js"));
+
+      for (const file of commandFiles) {
+        const command = await import(`../slashCommands/${dir}/${file}`).then(
+          (x) => x.default
+        );
+        if (!command?.data || !command?.run) return;
+
+        this.slashCommands.set(command.data.toJSON().name, command);
+        commands.push(command.data.toJSON());
+      }
+    });
+
+    this.on("ready", () => {
+      if (guildId && guildId.length) {
+        const guild = this.guilds.cache.get(guildId);
+        if (!guild) return;
+
+        guild.commands.set(commands);
+        console.log(`Registered commands in ${guild.name}.`);
+      } else {
+        this.application?.commands.set(commands);
+        console.log("Registered commands globally.");
       }
     });
 

@@ -7,6 +7,7 @@ export default new MessageCommand({
   minArgs: 1,
   usage: "{prefix}unban <user ID> [reason]",
   examples: "{prefix}unban 955408387905048637 good toaster",
+  permissions: ["BanMembers"],
   run: async ({ message, args }) => {
     const userID = args[0];
 

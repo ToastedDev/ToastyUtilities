@@ -1,6 +1,7 @@
 import { Command as ToastyMessageCommand } from "@toastify/structures/MessageCommand";
 import { Command as ToastySlashCommand } from "@toastify/structures/SlashCommand";
 import {
+  AutocompleteInteraction,
   ChatInputCommandInteraction,
   GuildMember,
   Message,
@@ -28,10 +29,17 @@ type MessageCommandOptions = {
 };
 
 type SlashCommandOptions = {
-  data: SlashCommandBuilder;
+  data:
+    | SlashCommandBuilder
+    | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+  autocomplete?: (params: {
+    client: BotClient;
+    interaction: AutocompleteInteraction;
+  }) => any;
   run: (params: {
     client: BotClient;
     interaction: ChatInputCommandInteraction & { member: GuildMember };
+    prefix: string;
   }) => any;
 };
 
@@ -50,6 +58,15 @@ export class MessageCommand extends ToastyMessageCommand {
 }
 
 export class SlashCommand extends ToastySlashCommand {
+  declare autocomplete?: (params: {
+    client: BotClient;
+    interaction: AutocompleteInteraction;
+  }) => any;
+  declare run: (params: {
+    client: BotClient;
+    interaction: ChatInputCommandInteraction & { member: GuildMember };
+    prefix: string;
+  }) => any;
   constructor(options: SlashCommandOptions) {
     super(options);
   }

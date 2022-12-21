@@ -7,6 +7,7 @@ export default new MessageCommand({
   minArgs: 1,
   usage: "{prefix}kick <user> [reason]",
   examples: "{prefix}kick @Toastify bad toaster",
+  permissions: ["KickMembers"],
   run: async ({ message, args }) => {
     const member =
       message.mentions.members.first() ||

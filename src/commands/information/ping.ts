@@ -4,6 +4,7 @@ import { MessageCommand } from "../../structures/Command";
 
 export default new MessageCommand({
   name: "ping",
+  description: "Pings the bot.",
   run: async ({ client, message }) => {
     const res = await message.channel.send("Pinging...");
 

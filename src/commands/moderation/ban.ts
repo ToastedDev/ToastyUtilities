@@ -8,6 +8,7 @@ export default new MessageCommand({
   minArgs: 1,
   usage: "{prefix}ban <user> [reason]",
   examples: "{prefix}ban @Toastify bad toaster",
+  permissions: ["BanMembers"],
   run: async ({ message, args }) => {
     const member =
       message.mentions.members.first() ||

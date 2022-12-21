@@ -1,30 +1,48 @@
-import { APIEmbedField, EmbedBuilder } from "discord.js";
+import { APIEmbedField, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { colors, emotes } from "../../config";
-import { MessageCommand } from "../../structures/Command";
+import { SlashCommand } from "../../structures/Command";
 import fs from "fs";
 import path from "path";
 import { capitalize } from "../../utils/functions";
 
-export default new MessageCommand({
-  name: "help",
-  description: "View all my commands.",
-  maxArgs: 1,
-  usage: ["{prefix}help", "{prefix}help [command]"],
-  examples: ["{prefix}help", "{prefix}help ban"],
-  run: ({ client, message, args, prefix }) => {
-    const cmd = args[0]?.toLowerCase();
+export default new SlashCommand({
+  data: new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("View all my commands.")
+    .addStringOption((option) =>
+      option
+        .setName("command")
+        .setDescription("The command to get information about.")
+        .setRequired(false)
+        .setAutocomplete(true)
+    ),
+  autocomplete: async ({ client, interaction }) => {
+    const focusedValue = interaction.options.getFocused();
+    const choices = client.commands
+      .map((command) => command.name)
+      .sort((a, b) => a.localeCompare(b));
+    const filtered = choices.filter((choice) =>
+      choice.startsWith(focusedValue)
+    );
+    await interaction.respond(
+      filtered.map((choice) => ({ name: choice, value: choice }))
+    );
+  },
+  run: ({ client, interaction, prefix }) => {
+    const cmd = interaction.options.getString("command");
     if (cmd) {
       const command =
         client.commands.get(cmd) ||
         client.commands.find((c) => c.aliases?.includes(cmd));
 
       if (!command)
-        return message.channel.send({
+        return interaction.reply({
           embeds: [
             new EmbedBuilder()
               .setDescription(`${emotes.x} Invalid command.`)
               .setColor(colors.fail),
           ],
+          ephemeral: true,
         });
 
       let description: string[] = [];
@@ -61,8 +79,9 @@ export default new MessageCommand({
           );
       }
 
-      return message.channel.send({
+      return interaction.reply({
         embeds: [embed.setDescription(description.join("\n"))],
+        ephemeral: true,
       });
     } else {
       const categories: APIEmbedField[] = [];
@@ -89,7 +108,7 @@ export default new MessageCommand({
         });
       });
 
-      return message.channel.send({
+      return interaction.reply({
         embeds: [
           new EmbedBuilder()
             .setAuthor({
@@ -99,6 +118,7 @@ export default new MessageCommand({
             .setFields(categories)
             .setColor(colors.main),
         ],
+        ephemeral: true,
       });
     }
   },

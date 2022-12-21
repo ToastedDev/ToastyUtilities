@@ -11,6 +11,7 @@ export default new MessageCommand({
   maxArgs: 2,
   usage: ["{prefix}slowmode <time>", "{prefix}slowmode <time> [channel]"],
   examples: ["{prefix}slowmode 5s", "{prefix}slowmode 5s #general"],
+  permissions: ["ManageChannels"],
   run: async ({ message, args }) => {
     const time = ms(args[0]);
     if (time > ms("6h"))
