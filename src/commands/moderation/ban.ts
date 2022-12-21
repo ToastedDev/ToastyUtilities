@@ -12,8 +12,7 @@ export default new MessageCommand({
   run: async ({ message, args }) => {
     const member =
       message.mentions.members.first() ||
-      message.guild.members.cache.get(args[0]) ||
-      (await message.guild.members.fetch(args[0]));
+      message.guild.members.cache.get(args[0]);
     if (!member)
       return message.channel.send({
         embeds: [new FailEmbed("I couldn't find that user.")],
