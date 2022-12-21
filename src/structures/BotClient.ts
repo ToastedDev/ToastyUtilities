@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import mongoose from "mongoose";
 import fs from "fs";
-import path from 'path'
+import path from "path";
 import { MessageCommand, SlashCommand } from "./Command";
 import { guildId } from "../config";
 
@@ -66,24 +66,26 @@ export class BotClient extends Client {
     // Slash commands
     const commands: ApplicationCommandDataResolvable[] = [];
 
-    fs.readdirSync(path.join(__dirname, "../slashCommands")).forEach(async (dir) => {
-      const commandFiles = fs
-        .readdirSync(path.join(__dirname, `../slashCommands/${dir}`))
-        .filter((file) => file.endsWith("ts") || file.endsWith("js"));
+    fs.readdirSync(path.join(__dirname, "../slashCommands")).forEach(
+      async (dir) => {
+        const commandFiles = fs
+          .readdirSync(path.join(__dirname, `../slashCommands/${dir}`))
+          .filter((file) => file.endsWith("ts") || file.endsWith("js"));
 
-      for (const file of commandFiles) {
-        const command = await import(`../slashCommands/${dir}/${file}`).then(
-          (x) => x.default
-        );
-        if (!command?.data || !command?.run) return;
+        for (const file of commandFiles) {
+          const command = await import(`../slashCommands/${dir}/${file}`).then(
+            (x) => x.default
+          );
+          if (!command?.data || !command?.run) return;
 
-        this.slashCommands.set(command.data.toJSON().name, command);
-        commands.push(command.data.toJSON());
+          this.slashCommands.set(command.data.toJSON().name, command);
+          commands.push(command.data.toJSON());
+        }
       }
-    });
+    );
 
     this.on("ready", () => {
-      if (guildId && guildId.length) {
+      if (guildId && guildId?.length) {
         const guild = this.guilds.cache.get(guildId);
         if (!guild) return;
 
