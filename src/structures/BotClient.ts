@@ -85,7 +85,7 @@ export class BotClient extends Client {
     );
 
     this.on("ready", () => {
-      if (guildId && guildId?.length) {
+      if (guildId && guildId.length) {
         const guild = this.guilds.cache.get(guildId);
         if (!guild) return;
 
@@ -98,7 +98,7 @@ export class BotClient extends Client {
     });
 
     // Events
-    fs.readdirSync("./src/events/")
+    fs.readdirSync(path.join(__dirname, "../events"))
       .filter((file) => file.endsWith("ts") || file.endsWith("js"))
       .forEach(async (file) => {
         const event = await import(`../events/${file}`).then((x) => x.default);
