@@ -1,13 +1,14 @@
 import { MessageCommand } from "../../structures/Command";
+import Warn from "../../schemas/Warns";
 import { FailEmbed, SuccessEmbed } from "../../structures/Embed";
 
 export default new MessageCommand({
-  name: "unmute",
-  description: "Unmute a user.",
+  name: "warn",
+  description: "Warn a user.",
   minArgs: 1,
-  usage: "{prefix}unmute <user> [reason]",
-  examples: "{prefix}unmute @Toastify breaking the rules",
-  permissions: ["ModerateMembers"],
+  usage: "{prefix}warn <user> [reason]",
+  examples: "{prefix}warn @Toastify broke rule 4",
+  permissions: ["KickMembers"],
   run: async ({ message, args }) => {
     const member =
       message.mentions.members.first() ||
@@ -16,13 +17,13 @@ export default new MessageCommand({
       return message.channel.send({
         embeds: [new FailEmbed("I couldn't find that user.")],
       });
-    if (member.permissions.has(["ModerateMembers", "Administrator"]))
+    if (member.permissions.has(["KickMembers", "Administrator"]))
       return message.channel.send({
         embeds: [new FailEmbed("That user is a mod/admin, I can't do that.")],
       });
-    if (!member.moderatable)
+    if (!member.manageable)
       return message.channel.send({
-        embeds: [new FailEmbed("I don't have permission to unmute that user.")],
+        embeds: [new FailEmbed("I don't have permission to warn that user.")],
       });
     if (member.roles.highest.position >= message.member.roles.highest.position)
       return message.channel.send({
@@ -30,17 +31,18 @@ export default new MessageCommand({
           new FailEmbed("That user has roles that are higher/equal to yours."),
         ],
       });
-    if (!member.isCommunicationDisabled())
-      return message.channel.send({
-        embeds: [new FailEmbed("That user is not muted.")],
-      });
 
-    const reason = args.slice(1).join(" ") || "No reason specified.";
+    const reason = args.slice(1).join(" ");
 
-    member.timeout(null, reason);
+    Warn.create({
+      guild: message.guild.id,
+      user: member.id,
+      moderator: message.author.id,
+      reason,
+    });
 
     message.channel.send({
-      embeds: [new SuccessEmbed(`**${member.user.tag}** was unmuted.`)],
+      embeds: [new SuccessEmbed(`**${member.user.tag}** was warned.`)],
     });
   },
 });

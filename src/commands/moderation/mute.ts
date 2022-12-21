@@ -43,7 +43,7 @@ export default new MessageCommand({
         embeds: [new FailEmbed("Please specify a valid time.")],
       });
 
-    const reason = args.splice(2).join(" ") || "No reason specified.";
+    const reason = args.slice(2).join(" ") || "No reason specified.";
 
     (member as GuildMember).timeout(time, reason);
 
