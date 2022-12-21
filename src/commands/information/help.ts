@@ -35,6 +35,13 @@ export default new MessageCommand({
       if (command.description)
         description.push(`**Description**: ${command.description}`);
 
+      if (command.aliases)
+        description.push(
+          `**Aliases**: ${command.aliases
+            .map((alias) => `${prefix}${alias}`)
+            .join(", ")}`
+        );
+
       if (command.usage) {
         if (typeof command.usage === "string")
           description.push(
