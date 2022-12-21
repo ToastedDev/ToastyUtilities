@@ -13,7 +13,7 @@ export default new MessageCommand({
 
     const ban =
       message.guild.bans.cache.get(userID) ||
-      (await message.guild.bans.fetch(userID));
+      (await message.guild.bans.fetch(userID).catch(() => null));
     if (!ban)
       return message.channel.send({
         embeds: [new FailEmbed("That user isn't banned in this server.")],
