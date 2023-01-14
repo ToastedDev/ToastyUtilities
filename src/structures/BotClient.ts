@@ -8,12 +8,12 @@ import {
 import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
-import { MessageCommand, SlashCommand } from "./Command";
+import { MessageCommandOptions, SlashCommandOptions } from "./Command";
 import { guildId } from "../config";
 
 export class BotClient extends Client {
-  commands = new Collection<string, MessageCommand>();
-  slashCommands = new Collection<string, SlashCommand>();
+  commands = new Collection<string, MessageCommandOptions>();
+  slashCommands = new Collection<string, SlashCommandOptions>();
 
   constructor(
     token: string | undefined,

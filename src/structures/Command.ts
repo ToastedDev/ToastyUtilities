@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import { BotClient } from "./BotClient";
 
-type MessageCommandOptions = {
+export type MessageCommandOptions = {
   name: string;
   description?: string;
   minArgs?: number;
@@ -28,7 +28,7 @@ type MessageCommandOptions = {
   }) => any;
 };
 
-type SlashCommandOptions = {
+export type SlashCommandOptions = {
   data:
     | SlashCommandBuilder
     | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
@@ -44,29 +44,12 @@ type SlashCommandOptions = {
 };
 
 export class MessageCommand extends ToastyMessageCommand {
-  declare usage?: string | string[];
-  declare examples: string | string[];
-  declare run: (params: {
-    client: BotClient;
-    message: Message;
-    args: string[];
-    prefix: string;
-  }) => any;
   constructor(options: MessageCommandOptions) {
     super(options);
   }
 }
 
 export class SlashCommand extends ToastySlashCommand {
-  declare autocomplete?: (params: {
-    client: BotClient;
-    interaction: AutocompleteInteraction;
-  }) => any;
-  declare run: (params: {
-    client: BotClient;
-    interaction: ChatInputCommandInteraction & { member: GuildMember };
-    prefix: string;
-  }) => any;
   constructor(options: SlashCommandOptions) {
     super(options);
   }
